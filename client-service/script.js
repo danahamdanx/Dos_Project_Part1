@@ -1,5 +1,9 @@
-const CATALOG_URL = "http://localhost:5001";
+/*const CATALOG_URL = "http://localhost:5001";
 const ORDER_URL = "http://localhost:5002";
+*/
+
+const CATALOG_URL = "http://catalog-service:5001";
+const ORDER_URL = "http://order-service:5002";
 
 //  Search function
 async function searchBooks() {
