@@ -6,8 +6,8 @@ app = Flask(__name__)
 CORS(app)
 
 # URL of catalog-service (Docker will resolve this later using service name)
-#CATALOG_URL = "http://localhost:5001"
-CATALOG_URL = "http://catalog-service:5001"
+CATALOG_URL = "http://localhost:5001"
+#CATALOG_URL = "http://catalog-service:5001"
 
 orders_log = "orders.txt"
 
