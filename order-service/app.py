@@ -1,25 +1,24 @@
 from flask import Flask, jsonify
 import requests
+import os
 from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
 
-# URL of catalog-service (Docker will resolve this later using service name)
-CATALOG_URL = "http://localhost:5001"
-#CATALOG_URL = "http://catalog-service:5001"
+# Use environment variable set in docker-compose
+CATALOG_URL = os.environ.get("CATALOG_URL", "http://localhost:5001")
 
 orders_log = "orders.txt"
 
 @app.route("/purchase/<int:item_id>", methods=["POST"])
 def purchase(item_id):
-    # Ask catalog to check stock & decrement if available
+    # This is the line that checks stock & decrements
     r = requests.post(f"{CATALOG_URL}/check_and_decrement/{item_id}")
 
     if r.status_code == 200:
         data = r.json()
 
-        # Save order history in a text file
         with open(orders_log, "a") as file:
             file.write(f"bought book id={item_id}\n")
 
