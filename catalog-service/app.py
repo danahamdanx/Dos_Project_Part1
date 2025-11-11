@@ -29,7 +29,6 @@ def info(item_id):
         abort(404, "Item not found")
     return jsonify(row_to_dict(r))
 
-# internal endpoint used by order-service to check & update stock (not public for client UI)
 @app.route('/check_and_decrement/<int:item_id>', methods=['POST'])
 def check_and_decrement(item_id):
     conn = sqlite3.connect(DB)
@@ -43,7 +42,6 @@ def check_and_decrement(item_id):
     if qty <= 0:
         conn.close()
         return jsonify({"success": False, "error": "out_of_stock"}), 409
-    # decrement
     cur.execute("UPDATE books SET quantity = quantity - 1 WHERE id = ?", (item_id,))
     conn.commit()
     cur.execute("SELECT quantity FROM books WHERE id = ?", (item_id,))
