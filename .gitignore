@@ -1,0 +1,40 @@
+# === Python ===
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.pdb
+*.egg-info/
+*.egg
+.env
+venv/
+ENV/
+env/
+build/
+dist/
+
+# === IDEs / Editors ===
+.vscode/
+.idea/
+
+# === OS files ===
+.DS_Store
+Thumbs.db
+
+# === Databases / Logs ===
+catalog-service/catalog.db
+order-service/orders.log
+*.log
+*.sqlite3
+*.db
+
+# === Temporary files ===
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# === Docker ===
+*.pid
+*.sock

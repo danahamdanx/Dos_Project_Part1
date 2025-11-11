@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  catalog-service:
+    build: ./catalog-service
+    container_name: catalog-service
+    ports:
+      - "5001:5001"
+  order-service:
+    build: ./order-service
+    container_name: order-service
+    ports:
+      - "5002:5002"
+    depends_on:
+      - catalog-service
+  client-service:
+    build: ./client-service
+    container_name: client-service
+    ports:
+      - "8080:80"
+    depends_on:
+      - catalog-service
+      - order-service

@@ -1,10 +1,12 @@
 const CATALOG_URL = "http://localhost:5001";
 const ORDER_URL = "http://localhost:5002";
 
-// ✅ Search function
+
+/*const CATALOG_URL = "http://catalog-service:5001";
+const ORDER_URL = "http://order-service:5002";
+*/
 async function searchBooks() {
     const topic = document.getElementById("topicInput").value;
-
     const response = await fetch(`${CATALOG_URL}/search/${topic}`);
     const books = await response.json();
 
@@ -12,31 +14,27 @@ async function searchBooks() {
 
     books.forEach(book => {
         html += `
-            <p>
-                <b>${book.title}</b> (ID: ${book.id}) — $${book.price} — qty: ${book.quantity}
-                <button onclick="info(${book.id})">Info</button>
-                <button onclick="purchase(${book.id})">Buy</button>
-            </p>
+            <div class="book-card">
+                <div class="book-title">${book.title} (ID: ${book.id})</div>
+                <div class="book-info">Topic: ${book.topic}</div>
+                <div class="book-info">Price: $${book.price} — Quantity: ${book.quantity}</div>
+                <div class="buttons">
+                    <button onclick="info(${book.id})">Info</button>
+                    <button onclick="purchase(${book.id})">Buy</button>
+                </div>
+            </div>
         `;
     });
 
     document.getElementById("results").innerHTML = html;
 }
 
-// ✅ View more details about the book
 async function info(id) {
     const response = await fetch(`${CATALOG_URL}/info/${id}`);
     const book = await response.json();
-
-    alert(`
-Title: ${book.title}
-Topic: ${book.topic}
-Price: $${book.price}
-Quantity available: ${book.quantity}
-    `);
+    alert(`Title: ${book.title}\nTopic: ${book.topic}\nPrice: $${book.price}\nQuantity: ${book.quantity}`);
 }
 
-// ✅ Purchase function
 async function purchase(id) {
     const response = await fetch(`${ORDER_URL}/purchase/${id}`, { method: "POST" });
     const result = await response.json();
@@ -47,5 +45,5 @@ async function purchase(id) {
         alert("❌ " + result.message);
     }
 
-    searchBooks(); // refresh search results after purchase
+    searchBooks(); // refresh results
 }
