@@ -1,4 +1,4 @@
-
+version: "3.9"
 
 services:
   catalog-service:
@@ -14,9 +14,7 @@ services:
       - "5002:5002"
     depends_on:
       - catalog-service
-    environment:
-      - CATALOG_URL=http://catalog-service:5001   
-
+      
   client-service:
     build: ./client-service
     container_name: client-service
