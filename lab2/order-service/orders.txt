@@ -1,0 +1,2 @@
+bought book id=2
+bought book id=1
