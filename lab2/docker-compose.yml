@@ -1,0 +1,62 @@
+services:
+  frontend:
+    build: ./client-service
+    container_name: frontend
+    ports:
+      - "5000:5000"
+    environment:
+      - CATALOG_REPLICAS=http://catalog1:5001,http://catalog2:5002
+      - ORDER_REPLICAS=http://order1:5003,http://order2:5004
+      - CACHE_SIZE=50
+      - CACHE_TTL_SECONDS=30
+    depends_on:
+      - catalog1
+      - catalog2
+      - order1
+      - order2
+
+  catalog1:
+    build: ./catalog-service
+    container_name: catalog1
+    ports:
+      - "5001:5001"
+    environment:
+      - PORT=5001
+      - REPLICA_ID=catalog1
+      - PEER_URL=http://catalog2:5002
+      - FRONTEND_CACHE_INVALIDATE_URL=http://frontend:5000/internal/cache/invalidate
+      - INTERNAL_TOKEN=secret123
+
+  catalog2:
+    build: ./catalog-service
+    container_name: catalog2
+    ports:
+      - "5002:5002"
+    environment:
+      - PORT=5002
+      - REPLICA_ID=catalog2
+      - PEER_URL=http://catalog1:5001
+      - FRONTEND_CACHE_INVALIDATE_URL=http://frontend:5000/internal/cache/invalidate
+      - INTERNAL_TOKEN=secret123
+
+  order1:
+    build: ./order-service
+    container_name: order1
+    ports:
+      - "5003:5003"
+    environment:
+      - PORT=5003
+      - REPLICA_ID=order1
+      - PEER_URL=http://order2:5004
+      - INTERNAL_TOKEN=secret123
+
+  order2:
+    build: ./order-service
+    container_name: order2
+    ports:
+      - "5004:5004"
+    environment:
+      - PORT=5004
+      - REPLICA_ID=order2
+      - PEER_URL=http://order1:5003
+      - INTERNAL_TOKEN=secret123
