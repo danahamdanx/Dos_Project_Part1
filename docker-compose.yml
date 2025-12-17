@@ -14,7 +14,7 @@ services:
       - "5002:5002"
     depends_on:
       - catalog-service
-
+      
   client-service:
     build: ./client-service
     container_name: client-service
