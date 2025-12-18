@@ -16,7 +16,7 @@ CACHE_SIZE = int(os.getenv("CACHE_SIZE", "50"))
 CACHE_TTL = int(os.getenv("CACHE_TTL_SECONDS", "30"))
 cache = LRUCacheTTL(capacity=CACHE_SIZE, ttl_seconds=CACHE_TTL)
 
-INTERNAL_TOKEN = os.getenv("INTERNAL_TOKEN", "secret123")  # لازم يطابق compose
+INTERNAL_TOKEN = os.getenv("INTERNAL_TOKEN", "secret123")  # compose
 
 # ---- internal endpoint to accept invalidations from replicas ----
 @app.post("/internal/cache/invalidate")
