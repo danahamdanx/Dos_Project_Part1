@@ -70,27 +70,42 @@ def check_and_decrement(item_id):
     conn.close()
 
     # Replicate decrement to peer
-    replicate_to_peer({"item_id": item_id}, "/internal/replicate/decrement")
+    replicate_to_peer(
+    {"item_id": item_id, "new_quantity": new_qty},
+    "/internal/replicate/update_stock"
+    )
+
     return jsonify({"success": True, "new_quantity": new_qty})
 
 # --- Internal replication endpoints ---
-@app.post("/internal/replicate/decrement")
-def internal_replicate_decrement():
+@app.post("/internal/replicate/update_stock")
+def internal_replicate_update_stock():
     data = request.get_json(force=True)
+
     if data.get("token") != INTERNAL_TOKEN:
         return jsonify({"error": "unauthorized"}), 401
 
     item_id = data.get("item_id")
-    if not item_id:
-        return jsonify({"error": "missing item_id"}), 400
+    new_qty = data.get("new_quantity")
 
-    # Apply decrement locally
+    if item_id is None or new_qty is None:
+        return jsonify({"error": "missing fields"}), 400
+
     conn = sqlite3.connect(DB)
     cur = conn.cursor()
-    cur.execute("UPDATE books SET quantity = quantity - 1 WHERE id = ? AND quantity > 0", (item_id,))
+    cur.execute(
+        "UPDATE books SET quantity=? WHERE id=?",
+        (new_qty, item_id)
+    )
     conn.commit()
     conn.close()
-    return jsonify({"ok": True, "replica": REPLICA_ID})
+
+    return jsonify({
+        "ok": True,
+        "replica": REPLICA_ID,
+        "item_id": item_id,
+        "quantity": new_qty
+    })
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=PORT, debug=True)
