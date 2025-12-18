@@ -29,3 +29,23 @@ catalog and order replicas.
 An in-memory LRU cache with TTL is used for read operations.
 Before any write operation, catalog replicas invalidate cached entries
 via an internal endpoint, guaranteeing strong consistency.
+
+
+
+# Part 2 – Performance Evaluation
+
+## Experiment Setup
+Two scenarios were tested:
+1. Direct catalog queries without cache
+2. Queries served through client-service cache
+
+Each scenario executed multiple repeated read requests.
+
+## Results
+- Cached requests showed significantly reduced response time.
+- Repeated reads were served from memory instead of hitting catalog replicas.
+- Write operations correctly invalidated cache entries before updates.
+
+## Conclusion
+Using an in-memory cache with explicit invalidation improves performance
+while maintaining strong consistency across replicas.
