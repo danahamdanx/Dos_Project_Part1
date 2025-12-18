@@ -37,7 +37,7 @@ def query_book(book_id):
         return jsonify({"source": "cache", "data": hit})
 
     replica = cat_lb.next()
-    r = requests.get(f"{replica}/query/{book_id}", timeout=3)
+    r = requests.get(f"{replica}/info/{book_id}", timeout=3)
     r.raise_for_status()
     data = r.json()
     cache.put(key, data)
