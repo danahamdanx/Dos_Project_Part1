@@ -1,10 +1,12 @@
 
-const CATALOG_URL = "http://localhost:5001";
-const ORDER_URL = "http://localhost:5002";
+/*const CATALOG_URL = "http://localhost:5001";
+const ORDER_URL = "http://localhost:5002";*/
+const CLIENT_URL = "http://localhost:5000";
+
 async function searchBooks() {
     const topic = document.getElementById("topicInput").value;
     try {
-        const response = await fetch(`${CATALOG_URL}/search/${topic}`);
+        const response = await fetch(`${CLIENT_URL}/search/${topic}`);
         if (!response.ok) throw new Error("Catalog service error");
         const books = await response.json();
 
@@ -32,7 +34,7 @@ async function searchBooks() {
 
 async function info(id) {
     try {
-        const response = await fetch(`${CATALOG_URL}/info/${id}`);
+        const response = await fetch(`${CLIENT_URL}/query/${id}`);
         if (!response.ok) throw new Error("Catalog service error");
         const book = await response.json();
         alert(`Title: ${book.title}\nTopic: ${book.topic}\nPrice: $${book.price}\nQuantity: ${book.quantity}`);
@@ -43,7 +45,11 @@ async function info(id) {
 
 async function purchase(id) {
     try {
-        const response = await fetch(`${ORDER_URL}/purchase/${id}`, { method: "POST" });
+const response = await fetch(`${CLIENT_URL}/buy`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ book_id: id })
+});
         if (!response.ok) throw new Error("Order service error");
         const result = await response.json();
 
