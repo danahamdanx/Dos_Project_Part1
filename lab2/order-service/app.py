@@ -5,7 +5,7 @@ from flask import Flask, request, jsonify, abort
 from flask_cors import CORS
 
 # Environment configuration
-PORT = int(os.getenv("PORT", "5001"))
+PORT = int(os.getenv("PORT", "5003"))
 REPLICA_ID = os.getenv("REPLICA_ID", "replica1")
 PEER_URL = os.getenv("PEER_URL")  # URL of peer replica
 INTERNAL_TOKEN = os.getenv("INTERNAL_TOKEN", "secret123")
@@ -106,6 +106,15 @@ def internal_replicate_update_stock():
         "item_id": item_id,
         "quantity": new_qty
     })
+
+@app.post("/buy")
+def buy():
+    data = request.get_json(force=True)
+    item_id = data.get("book_id")
+    if not item_id:
+        return jsonify({"error": "missing book_id"}), 400
+    return check_and_decrement(item_id)
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=PORT, debug=True)

@@ -3,6 +3,7 @@ import requests
 from flask import Flask, request, jsonify
 from cache import LRUCacheTTL
 from lb import RoundRobin
+import json
 
 app = Flask(__name__)
 
@@ -46,7 +47,38 @@ def query_book(book_id):
 # ---- WRITE (Buy/Order) no cache ----
 @app.post("/buy")
 def buy_book():
-    payload = request.get_json(force=True)
+    payload = None
+
+    # 1️⃣ حاول JSON طبيعي
+    if request.is_json:
+        payload = request.get_json(silent=True)
+
+    # 2️⃣ إذا فشل، جرّبي raw
+    if not payload and request.data:
+        try:
+            import json
+            payload = json.loads(request.data.decode("utf-8"))
+        except Exception:
+            pass
+
+    # 3️⃣ إذا فشل، جرّبي form
+    if not payload and request.form:
+        payload = request.form.to_dict()
+
+    if not payload:
+        return jsonify({"error": "invalid or missing request body"}), 400
+
+    book_id = payload.get("book_id")
+    if not book_id:
+        return jsonify({"error": "missing book_id"}), 400
+
     replica = ord_lb.next()
-    r = requests.post(f"{replica}/buy", json=payload, timeout=3)
+    r = requests.post(
+        f"{replica}/check_and_decrement/{book_id}",
+        timeout=3
+    )
+
     return (r.text, r.status_code, {"Content-Type": "application/json"})
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
